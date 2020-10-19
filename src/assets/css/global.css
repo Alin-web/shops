@@ -1,0 +1,12 @@
+/* 全局样式表 然后再main 中导入生效*/
+html,
+body,
+#app {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+/* el-pagination 分页 */
+.el-pagination{
+    margin-top: 20px;
+}
