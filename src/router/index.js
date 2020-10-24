@@ -8,6 +8,10 @@ import Home from '../components/Home.vue'
 import Welcome from '../components/Welcome.vue'
 // 导入users 组件
 import Users from '../components/user/users.vue'
+//导入rights组件
+import Rights from '../components/power/Rights.vue'
+// 导入roles 组件
+import Roles from '../components/power/Roles.vue'
 
 Vue.use(VueRouter)
 
@@ -24,6 +28,10 @@ const routes = [
     { path: '/Welcome',component: Welcome },
     // 添加子路由 users
     { path: '/users',component: Users },
+    // 添加子路由 rights
+    { path: '/Rights',component: Rights },
+    // 添加子路由 roles
+    { path: '/Roles',component: Roles },
   ]}
 ]
 

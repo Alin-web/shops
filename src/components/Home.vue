@@ -79,8 +79,8 @@ export default {
             const {data:array } = await this.$http.get('menus')
             // 对请求判断一下
             if(array.meta.status !== 200) return console.log('数据获取失败')
-            console.log('数据获取成功');
-            console.log(array);
+            // console.log('数据获取成功');
+            // console.log(array);
             // 把获取到的数据挂载到data中
             this.menulist = array
         },

@@ -9,7 +9,7 @@
         <!-- 卡片视图区域 -->
         <el-card class="card">
             <!-- 搜索与添加区域 -->  
-            <!-- gutter 控制两个el-col 之间的间距 值为数字  -->
+            <!-- 分割栏组件  gutter 控制两个el-col 之间的间距 值为数字  -->
             <el-row :gutter="50" class="input_search">
                 <el-col :span="10">
                     <el-input placeholder="请输入内容" v-model="queryinfo.query" clearable @clear="getUserList">
@@ -34,15 +34,15 @@
                         <el-switch  v-model="scope.row.mg_state" @change="switch_change(scope.row)"> </el-switch>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" width="300px">
+                <el-table-column label="操作" width="400px">
                     <template slot-scope="scope">
                         <!-- 修改按钮 -->
-                        <el-button type="success" icon="el-icon-edit" @click="alterBut(scope.row.id)"></el-button>
+                        <el-button type="success" icon="el-icon-edit" @click="alterBut(scope.row.id)">修改</el-button>
                         <!-- 删除按钮 -->
-                        <el-button type="danger" icon="el-icon-delete" @click="remove(scope.row.id)"></el-button>
+                        <el-button type="danger" icon="el-icon-delete" @click="remove(scope.row.id)">删除</el-button>
                         <!-- 分配角色按钮 -->
                         <el-tooltip content="分配角色" placement="top" :enterable='false'>
-                            <el-button type="warning" icon="el-icon-setting"></el-button>
+                            <el-button type="warning" icon="el-icon-setting" @click="allocationRoles(scope.row)">分配角色</el-button>
                         </el-tooltip>
                     </template>
                 </el-table-column>
@@ -101,14 +101,25 @@
                         <el-button type="primary" @click="AlterButSure">确 定</el-button>
                     </span>
             </el-dialog>
-            <!-- 点击删除按钮 进行提示文本 -->
-            <!-- <el-dialog title="提示" :visible.sync="removeBut" width="30%">
-                <span>此操作将永久删除该用户是,否进行删除</span>
-                <span slot="footer" class="dialog-footer">
-                    <el-button @click="removeBut = false">取 消</el-button>
-                    <el-button type="primary" @click="removeBut = false">确 定</el-button>
+            <!-- 点击分配角色按钮 弹出的提示组件 -->
+            <el-dialog title="分配权限" :visible.sync="showBut" width="50%" @close='rolesClose'>
+               <p>当前用户: {{userInfo.username}}</p>
+               <p>当前角色: {{userInfo.role_name}}</p>
+               <p>分配新角色:
+                    <el-select v-model="selectRolesId" placeholder="请选择">
+                        <el-option
+                        v-for="item in rolesList"
+                        :key="item.id"
+                        :label="item.roleName"
+                        :value="item.id">
+                        </el-option>
+                    </el-select>
+               </p>
+                <span slot="footer" class="dialog-footer"> 
+                    <el-button @click="showBut = false">取 消</el-button>
+                    <el-button type="primary" @click="showButSure">确 定</el-button>
                 </span>
-            </el-dialog> -->
+            </el-dialog>
         </el-card>
     </div>
 </template>
@@ -178,8 +189,14 @@ export default {
             // 点就修改按钮 传递过来的后台数据
             AlterButData: {
             },
-            // removeBut 点击删除按钮进行用户修改
-            // removeBut: false
+            // showBut 点击分配角色按钮 控制的弹窗组件
+            showBut: false,
+            // showBut 控制的弹窗组件所对应的显示信息 
+            userInfo:{ },
+            // 弹框组件中下拉框内容的数据
+            rolesList:{ },
+            // 下拉菜单中 已选中的角色ID值
+            selectRolesId: ' '
         }
     },
     // created 生命周期函数 一般用来请求数据
@@ -318,6 +335,42 @@ export default {
             this.$message.success('删除用户成功')
             // 后台数据库内容变更 前端页面重新加载
             this.getUserList()
+        },
+        // allocationRoles 点击分配角色按钮 对应的事件
+         async allocationRoles(item){
+            console.log(item)   
+            this.userInfo = item
+            // 在展示对话框前 获取所有角色的列表
+            const {data:res} = await this.$http.get('roles')
+            // console.log(res.data)
+            // 把得到的数据 传递到data中进行页面渲染
+            this.rolesList = res.data
+            console.log(111111111111)
+            console.log(this.rolesList)
+            // 展示弹框组件
+            this.showBut = true
+        },
+        // showButSure 弹框组件中的确定按钮 事件
+        async showButSure(){
+            // 判断是否进行数据修改
+            if(!this.selectRolesId ){
+               return this.$message.error('请选择要分配的角色')
+            }
+            // 把选择的值发送给到后台进行数据修改
+            const {data:res} = await this.$http.put(`users/${this.userInfo.id }/role`,{rid:this.selectRolesId})
+            if(res.meta.status !==200){
+               return this.$message.error('更新角色失败')
+            }
+            this.$message.success('更新角色成功')
+            // 数据库更新 刷新页面
+            this.getUserList()
+            // 关闭弹窗组件
+            this.showBut = false
+        },
+        // rolesClose 对话框组件关闭 重置选项
+        rolesClose(){
+            // 把所选项为空
+            this.selectRolesId = '' 
         }
     }
 }
