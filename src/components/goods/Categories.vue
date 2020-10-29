@@ -26,7 +26,7 @@
                 </template>
                 <template slot="operation" slot-scope="scope">
                     <el-button type="primary" icon="el-icon-edit" size="mini" @click="compile(scope.row.cat_id)">编辑</el-button>
-                    <el-button type="danger" icon="el-icon-delete" size="mini">删除</el-button>
+                    <el-button type="danger" icon="el-icon-delete" size="mini" @click="delItem(scope.row.cat_id)">删除</el-button>
                 </template>
             </tree-table>
             <!-- 分页 -->
@@ -274,6 +274,27 @@ export default {
                 this.getGoodesList()
                  this.compileDialog =false
             })
+        },
+        // delItem 删除按钮事件
+        async delItem(itemId){
+            console.log(itemId)
+            const messageBOX =  await this.$confirm('此操作将永久删除该数据，是否继续','提示',{
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).catch(err => err)
+            console.log(messageBOX)
+            if(messageBOX == 'cancel'){
+                return this.$message.warning('取消删除')
+            }
+            this.$message.success('删除成功')
+            // 向数据库发送请求进行删除
+            const {data:res} = await this.$http.delete(`categories/${itemId}`)
+            if(res.meta.status !==200){
+                return this.$message.warning('删除失败')
+            }
+            // 删除成功 刷新列表
+            this.getGoodesList()
         }
     }
 }
