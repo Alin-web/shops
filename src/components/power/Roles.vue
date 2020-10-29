@@ -52,11 +52,11 @@
             </el-table>
         </el-card>
         <!-- 点击添加用户弹出来的对话框 -->
-        <el-dialog title="添加用户信息" :visible.sync="addRolesDialog" width="50%">
-            <!-- 内容主题区域 -->
+        <el-dialog title="添加用户信息" :visible.sync="addRolesDialog" width="50%"  >
+            <!-- 内容主题区域 -->   
              <!-- 内容主题 -->
             <el-form :model="addUser" ref="addref" label-width="100px">
-                <el-form-item  label="角色名称" class="input_dialog">
+                <el-form-item  label="角色名称" class="input_dialog" >
                     <el-input v-model="addUser.roleName"></el-input>
                 </el-form-item>
                 <el-form-item label="角色描述" class="input_dialog">
@@ -72,7 +72,7 @@
         <el-dialog title="更改用户信息" :visible.sync="getRolesDialog" width="50%">
             <!-- 内容主题区域 -->
              <!-- 内容主题 -->
-            <el-form :model="getUser" ref="addref" label-width="100px">
+            <el-form :model="getUser" label-width="100px">
                 <el-form-item  label="角色名称" class="input_dialog">
                     <el-input v-model="getUser.roleName" disabled></el-input>
                 </el-form-item>
@@ -89,7 +89,8 @@
         <el-dialog @close='closepermission' title="分配权限" :visible.sync="PermissionsHidden" width="50%">
             <!-- 内容主题区域 -->
              <!-- 内容主题  树形结构 :data="rightsList" 绑定数据源  :props="treeProps" 渲染规则  default-expand-all 当为true的时候默认展开所有节点 default-checked-keys-->
-            <el-tree ref="treeref" :data="rightsList" :props="treeProps" show-checkbox node-key="id" default-expand-all :default-checked-keys="defKey"></el-tree>
+            <el-tree ref="treeref" :data="rightsList" :props="treeProps" show-checkbox 
+            node-key="id" default-expand-all :default-checked-keys="defKey"></el-tree>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="PermissionsHidden = false">取 消</el-button>
                 <el-button type="primary" @click="PermissionsSure">确 定</el-button>
@@ -127,7 +128,7 @@ export default {
             // 默认选中的 key的数组
             defKey:[],
             // 当前即将分配权限的角色id值 
-            idRoles:''
+            idRoles:'',
         }
     },
     // created 生命周期函数 一般用来获取后台数据 进行初始化渲染  实际实现还是在 methods 中实现
@@ -233,13 +234,16 @@ export default {
         async addSure(){
             console.log(this.addUser.roleName)
             console.log(this.addUser.roleDesc)
-            // 隐藏弹框组件
-            this.addRolesDialog = false
             // 进行数据添加
             const {data:res}  = await this.$http.post('roles',this.addUser)
             console.log(res)
             // 数据库数据更新  更新前端页面
             this.getRolesLitst()
+            // 重置表单
+             this.addUser.roleName="",
+             this.addUser.roleDesc='',
+            // 隐藏弹框组件
+            this.addRolesDialog = false
         },
         // 点击编辑按钮 进行角色描述编辑
         async editor(id){

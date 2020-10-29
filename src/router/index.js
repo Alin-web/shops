@@ -12,7 +12,10 @@ import Users from '../components/user/users.vue'
 import Rights from '../components/power/Rights.vue'
 // 导入roles 组件
 import Roles from '../components/power/Roles.vue'
-
+// 导入goodslist 组件
+import Goodes from '../components/goods/Goods.vue'
+// 导入 categories 组件
+import Categories from '../components/goods/Categories.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -32,6 +35,10 @@ const routes = [
     { path: '/Rights',component: Rights },
     // 添加子路由 roles
     { path: '/Roles',component: Roles },
+    // 添加子路由goodslist
+    { path: '/Goods',component: Goodes },
+    // 添加子路由goodslist
+    { path: '/Categories',component: Categories }
   ]}
 ]
 

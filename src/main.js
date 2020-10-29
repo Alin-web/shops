@@ -6,6 +6,8 @@ import './plugins/element.js'
 import './assets/css/global.css'
 // 导入阿里巴巴矢量图标
 import './assets/fonts/iconfont.css'
+// 导入插件vue-table-with-tree-grid 
+import TreeTable from 'vue-table-with-tree-grid'
 
 // 导入axios 请求包
 import axios from 'axios' 
@@ -23,7 +25,8 @@ axios.interceptors.request.use(config => {
 Vue.prototype.$http = axios
 
 Vue.config.productionTip = false
-
+// 注册插件 vue-table-with-tree-grid
+Vue.component('tree-table',TreeTable)
 new Vue({
   router,
   render: h => h(App)
