@@ -13,8 +13,7 @@
                 </el-col>
             </el-row>
             <!-- 表格 -->
-            <tree-table border class="table" :data="goodeList" :columns="columns" :show-index="true" index-text="#"
-                :expand-type="false" :selection-type="false" :stripe="true" border>
+            <tree-table border class="table" :data="goodeList" :columns="columns" :show-index="true" index-text="#" :expand-type="false" :selection-type="false" :stripe="true" >
                 <template slot="isok" slot-scope="scope">
                     <i class="el-icon-success" v-if="scope.row.cat_deleted == false" style="color:green"></i>
                     <i class="el-icon-error" type="primary" v-else style="color:red"></i>
