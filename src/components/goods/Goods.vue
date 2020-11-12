@@ -3,198 +3,137 @@
         <!-- 面包屑导航 -->
         <el-breadcrumb separator-class="el-icon-arrow-right">
             <el-breadcrumb-item :to="{ path: '/Home' }">首页</el-breadcrumb-item>
-            <el-breadcrumb-item>权限管理</el-breadcrumb-item>
-            <el-breadcrumb-item>角色列表</el-breadcrumb-item>
+            <el-breadcrumb-item>商品管理</el-breadcrumb-item>
+            <el-breadcrumb-item>商品列表</el-breadcrumb-item>
         </el-breadcrumb>
         <!-- 卡片区域 -->
-        <el-card class="card">
-            <el-table :data="rolesList" >
-                <el-table-column type="expand">
+       <el-card>
+            <!-- 第一部分 layout布局:搜素框，添加按钮 -->
+            <el-row class="firstPart">
+                <!-- 搜素框 -->
+                <el-col :span="8">
+                    <el-input placeholder="请输入内容" v-model="queryInfo.query" clearable @clear="goodsList">
+                        <el-button slot="append" icon="el-icon-search" @click="goodsList"></el-button>
+                    </el-input>
+                </el-col>
+                <!-- 添加按钮 -->
+                <el-col :span="8">
+                    <el-button type="primary" @click="addRouter">添加商品</el-button>
+                </el-col>
+            </el-row>
+            <!-- 第二部分:table表格 -->
+            <el-table class="secondPart" border stripe :data="goods">
+                <!-- 索引行 -->
+                <el-table-column type="index"></el-table-column>
+                <el-table-column label="商品名称" prop="goods_name"></el-table-column>
+                <el-table-column label="商品价格(元)" prop="goods_price" width="120px"></el-table-column>
+                <el-table-column label="商品重量" prop="goods_weight" width="80px"></el-table-column>
+                <el-table-column label="创建时间" prop="add_time" width="180px">
+                    <!-- 过滤器使用需要在自定义插槽内使用 -->
                     <template slot-scope="scope">
-                        <!-- 使用layout布局 -->
-                        <el-row v-for="(item1,index) in scope.row.children" :key="index" :class="['vconter','bbottom',index === 0 ? 'btop':''  ]">
-                            <!-- 一级权限列表 -->
-                            <el-col :span="5" class="oneCol">
-                                <el-tag closable  @close="tagClose(scope.row,item1.id)"> {{item1.authName}}</el-tag>
-                                <i class="el-icon-caret-right"></i>
-                            </el-col>
-                            <!-- 二级三级权限列表 -->
-                            <el-col :span="19">
-                                <el-row v-for="(item2,index2) in item1.children" :key="index2" :class="['vconter',index2 === 0 ? ' ':'btop']">
-                                    <!-- 二级权限列表渲染 -->
-                                    <el-col :span="6">
-                                        <el-tag type="success" closable  @close="tagClose(scope.row,item2.id)" > {{item2.authName}}</el-tag>
-                                        <i class="el-icon-caret-right"></i>
-                                    </el-col>
-                                    <!-- 三级权限列表渲染 -->
-                                    <el-col :span="18">
-                                        <el-tag type="warning" closable v-for="(item3,index3) in item2.children" :key="index3" @close="tagClose(scope.row,item3.id)"> {{item3.authName}}</el-tag>
-                                    </el-col>
-                                </el-row>
-                            </el-col>
-                        </el-row>
+                        {{scope.row.add_time | dataFormat}}
                     </template>
                 </el-table-column>
-                <el-table-column label="#" type="index"></el-table-column>
-                <el-table-column label="角色名称" prop="roleName"></el-table-column>
-                <el-table-column label="角色描述" prop="roleDesc"></el-table-column>
-                <el-table-column label="操作" width="400px">
+                <el-table-column label="操作" width="150px">
                     <template slot-scope="scope">
-                    <el-button type="primary" icon="el-icon-edit" >编辑</el-button>
-                    <el-button type="danger" icon="el-icon-delete" >删除</el-button>
-                    <el-button type="warning" icon="el-icon-setting" @click="showPermissions(scope.row)">分配权限</el-button>
+                        <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
+                        <el-button type="danger" icon="el-icon-delete" size="mini" @click="delButton(scope.row.goods_id)"></el-button>
                     </template>
                 </el-table-column>
             </el-table>
-        </el-card>
-        <!-- 点击分配权限按钮 弹框组件 -->
-        <el-dialog title="分配权限" :visible.sync="show" width="50%" @close="showClose">
-            <!-- 内容主题区域 -->
-            <el-tree ref="treeref" :data="permissionsList" :props="treePorps" show-checkbox  
-                node-key="id" default-expand-all  :default-checked-keys="defKey"></el-tree>
-            <span slot="footer" class="dialog-footer">
-                <el-button @click="show = false">取 消</el-button>
-                <el-button type="primary" @click="showSure">确 定</el-button>
-            </span>
-        </el-dialog>
+            <!-- 第三部分：分页组件 -->
+            <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :current-page="queryInfo.pagenum"
+                 :page-sizes="[5,10,15,20,25,30]" :page-size="queryInfo.pagesize" layout="total, sizes, prev, pager, next, jumper" :total="total">
+            </el-pagination>
+       </el-card>
     </div>
 </template>
 <script>
 export default {
     data() {
         return {
-            rolesList:[],
-            // showFPQX 弹框组件的显示与隐藏
-            show: false,
-            // 点击的当前行数据的ID
-            currentLineID:'',
-            // 所有的权限列表
-            permissionsList:[],
-            treePorps: {
-                children: 'children',
-                label: 'authName'
+            // 初始请求商品数据
+            queryInfo:{
+                // 查询参数
+                query:'',
+                // 请求第几页
+                pagenum:1,
+                // 一页显示多少条数据
+                pagesize:10,
             },
-            // 默认选中的id 第三层权限的ID 
-            defKey:[]
+            //商品列表
+            goods:[],
+            // 总条数
+            total:0
         }
     },
     created(){
-        this.getRolesList()
+        this.goodsList()
     },
     methods:{
-        async getRolesList(){
-            const { data:res } = await this.$http.get('roles')
-            if( res.meta.status !==200){
-                return this.$message.error('请求失败')
+        async goodsList(){
+            const {data:res} = await this.$http.get('goods',{params:this.queryInfo})
+            if(res.meta.status !==200){
+                return this.$message.error('商品列表请求失败')
             }
-            // this.$message.success(res.meta.msg)
-            // console.log(res)
-            // 把获取到的数据 传递到data 中进行页面渲染
-            this.rolesList = res.data
+            // 数据传递 然后进行页面渲染
+            this.goods = res.data.goods
+            // 一个有多少条数据
+            this.total= res.data.total
         },
-        // showPermissions 点击分配权限按钮对应的事件
-        async showPermissions(item){
-            this.currentLineID = item.id
-            console.log(this.currentLineID)
-            // 请求所有权限列表
-            const {data:res} = await this.$http.get('rights/tree')
-            if( res.meta.status !==200){
-                return this.$message.error('请求失败')
-            }
-            this.$message.success(res.meta.msg)
-            // 获取成功 传递到data中
-            this.permissionsList = res.data
-            // 得到第三层权限ID
-            this.getPermissions(item,this.defKey)
-            // 显示弹框组件
-            this.show=true
+        //handleSizeChange 页面大小改变
+        handleSizeChange(newsize){
+            this.queryInfo.pagesize =newsize
+            this.goodsList()
         },
-        // 获取第三层的权限ID 通过递归的形式获取三级权限的 id 保存到defKey数组中
-        getPermissions(roles,arr){
-            if(!roles.children){
-                return arr.push(roles.id)
-            }
-            roles.children.forEach(
-                it => this.getPermissions(it,arr)
-            )
+        // handleCurrentChange 当前页码改变
+        handleCurrentChange(newNum){
+            this.queryInfo.pagenum = newNum
+            this.goodsList()
         },
-        // showClose 解决bug 清空当前默认选中的节点ID
-        showClose(){
-            this.defKey=[]
-        },
-        // 点击确定按钮 提交选择的节点数据 到后台
-        async showSure(){
-            const permissionsID =[
-                // 都是列表 利用展开运算符进行简化操作
-                // 获取当前的选中节点的ID  
-                ...this.$refs.treeref.getCheckedKeys(),
-                // 获取当前的半选中节点的ID
-                ...this.$refs.treeref.getHalfCheckedKeys()
-            ]
-            console.log(permissionsID)
-            // 进行优化，使其符合后台申请的参数
-            const idList = permissionsID.join(',')
-            // 向后台发送请求 把选中的权限授权给当前数据
-            const {data:res} = await this.$http.post(`roles/${this.currentLineID }/rights`,{rids:idList})
-            if( res.meta.status !==200){
-                return this.$message.error('请求失败')
-            }
-            this.$message.success(res.meta.msg)
-            // 更新页面
-            this.getRolesList()
-            // 关闭弹窗
-            this.show=false
-        },
-        //点击tag标签 进行后台请求 删除对应数据
-        async tagClose(currentLineItem,PermissionsID){
-            // 返回的是一个Promise对象 需要简化
-            const del = await this.$confirm('此操作将永久删除该用户权限，是否删除','提示',{
+        //删除功能delButton
+        async delButton(currentLineItemId){
+            const result = await this.$confirm('此操作将删除该商品信息, 是否继续?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
                 type: 'warning'
             }).catch(err => err)
-            console.log(del)
-            // 点击确认 del=confirm 点击取消 del = cancel 进行判断 看用户是否删除
-            if(del == 'cancel' ){
-                return this.$message.error('取消删除用户权限')
+            console.log(result)
+            if(result !== 'confirm'){
+                return  this.$message('取消删除成功')
             }
-            this.$message.success('成功删除用户权限')
-            // 确认删除用户权限后向数据库发送请求 删除对应权限 根据API 接口要求需要 需要提供删除的角色ID 和权限ID
-            console.log(currentLineItem)
-            console.log(PermissionsID)
-            // 删除权限
-            const {data:res} = await this.$http.delete(`roles/${currentLineItem.id}/rights/${PermissionsID}`)
-            if( res.meta.status !==200){
-                return this.$message.error('请求失败')
+            // 确认删除 向后台发送删除请求 进行数据删除
+            const {data:return_value} = await this.$http.delete(`goods/${currentLineItemId}`)
+            if(return_value.meta.status !== 200){
+                return  this.$message.error('删除失败')
             }
-            this.$message.success(res.meta.msg)
-            // 刷新后台数据 如果重新刷新后台数据的话调用该方法 this.getRolesList() 会从刷新页面 推荐使用操作原本的数据进行操作来更新页面数据
-            // this.getRolesList()
-            // 把返回的数据 重新赋值给作用域插槽的当前行
-            currentLineItem.children = res.data
-
+            this.$message.success('删除成功')
+            this.goodsList()
+        },
+        // 添加商品按钮
+        addRouter(){
+            this.$router.push('/goods/add')
         }
+    },
+    computed:{
     }
 }
 </script>
 <style lang="less" scoped>
-.card{
+.el-card{
+    margin-top: 20px;
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15) !important;
 }
-// tag 标签
-.el-tag{
-    margin: 7px;
+// 第一部分
+.firstPart{
+    margin: 0 0 20px 0;
+
 }
-// 居中对其
-.vconter{
-    display: flex;
-    align-items: center;
+.firstPart :nth-child(2){
+    margin-left: 40px;
 }
-// btop 上边框线
-.btop{
-    border-top: 1px solid #ccc;
-}
-.bbottom{
-    border-bottom:1px solid #ccc;
+// secondPart 第二部分
+.secondPart{
+    font-size: 14px;
 }
 </style>
