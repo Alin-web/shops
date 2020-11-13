@@ -6,7 +6,7 @@ body,
     padding: 0;
     margin: 0;
     /* 页面最小宽度 不足则会添加滚动条 */
-    min-width: 1366px;   
+    min-width: 1366px;
 }
 /* el-pagination 分页 */
 .el-pagination{
@@ -25,4 +25,7 @@ body,
 }
 .ql-editor{
     min-height: 300px;
+}
+.bgc{
+    background-color: #ccc;
 }
