@@ -20,6 +20,8 @@ import Categories from '../components/goods/Categories.vue'
 import Params from '../components/goods/Params.vue'
 // 导入添加商品组件
 import Add from '../components/goods/Add.vue'
+// 导入 订单列表组件  order
+import Order from '../components/order/Order.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -46,7 +48,9 @@ const routes = [
     // 添加子路由goodslist
     { path: '/Params',component: Params },
     // 导入子路由 add 添加商品路由组件
-    { path: '/Goods/Add',component: Add }
+    { path: '/Goods/Add',component: Add },
+    // 导入子路由 Order 添加订单列表组件
+    { path: '/orders',component: Order },
   ]}
 ]
 
