@@ -22,6 +22,8 @@ import Params from '../components/goods/Params.vue'
 import Add from '../components/goods/Add.vue'
 // 导入 订单列表组件  order
 import Order from '../components/order/Order.vue'
+// 导入 reporte 数据报表组件
+import Repotr from '../components/report/Report.vue'
 Vue.use(VueRouter)
 
 const routes = [
@@ -51,6 +53,8 @@ const routes = [
     { path: '/Goods/Add',component: Add },
     // 导入子路由 Order 添加订单列表组件
     { path: '/orders',component: Order },
+    // 导入子路由 Order 添加订单列表组件
+    { path: '/reports',component: Repotr }
   ]}
 ]
 
