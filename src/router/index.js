@@ -1,29 +1,55 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
+
+// 路由懒加载
 // 导入login组件
-import Login from '../components/Login.vue'
+// import Login from '../components/Login.vue'
+const Login = () => import(/* webpackChunkName: "login_home_welcome" */ '../components/Login.vue')
+
 // 导入 home  组件
-import Home from '../components/Home.vue'
+//import Home from '../components/Home.vue'
+const Home = () => import(/* webpackChunkName: "login_home_welcome" */ '../components/Home.vue')
+
 // 导入welcome 组件
-import Welcome from '../components/Welcome.vue'
+// import Welcome from '../components/Welcome.vue'
+const Welcome = () => import(/* webpackChunkName: "login_home_welcome" */ '../components/Welcome.vue')
+
 // 导入users 组件
-import Users from '../components/user/users.vue'
+// import Users from '../components/user/users.vue'
 //导入rights组件
-import Rights from '../components/power/Rights.vue'
+// import Rights from '../components/power/Rights.vue'
 // 导入roles 组件
-import Roles from '../components/power/Roles.vue'
-// 导入goodslist 组件
-import Goodes from '../components/goods/Goods.vue'
+// import Roles from '../components/power/Roles.vue'
+
+// 路由懒加载
+const Users = () => import(/* webpackChunkName: "Users_Rights_Roles" */ '../components/user/users.vue')
+const Rights = () => import(/* webpackChunkName: "Users_Rights_Roles" */ '../components/power/Rights.vue')
+const Roles = () => import(/* webpackChunkName: "Users_Rights_Roles" */ '../components/power/Roles.vue')
+
+
+
+
 // 导入 categories 组件
-import Categories from '../components/goods/Categories.vue'
+//import Categories from '../components/goods/Categories.vue'
 // 导入 params 组件
-import Params from '../components/goods/Params.vue'
+//import Params from '../components/goods/Params.vue'
+
+const Categories = () => import(/* webpackChunkName: "Categories_Params" */ '../components/goods/Categories.vue')
+const Params = () => import(/* webpackChunkName: "Categories_Params" */ '../components/goods/Params.vue')
+
+// 导入goodslist 组件
+//  import Goodes from '../components/goods/Goods.vue'
 // 导入添加商品组件
-import Add from '../components/goods/Add.vue'
+// import Add from '../components/goods/Add.vue'
+const Goodes = () => import(/* webpackChunkName: "Goodes_Add" */ '../components/goods/Goods.vue')
+const Add = () => import(/* webpackChunkName: "Goodes_Add" */ '../components/goods/Add.vue')
+
 // 导入 订单列表组件  order
-import Order from '../components/order/Order.vue'
+//import Order from '../components/order/Order.vue'
 // 导入 reporte 数据报表组件
-import Repotr from '../components/report/Report.vue'
+//import Repotr from '../components/report/Report.vue'
+const Order = () => import(/* webpackChunkName: "Order_Repotr" */ '../components/order/Order.vue')
+const Repotr = () => import(/* webpackChunkName: "Order_Repotr" */ '../components/report/Report.vue')
 Vue.use(VueRouter)
 
 const routes = [

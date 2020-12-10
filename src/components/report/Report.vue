@@ -16,6 +16,7 @@
 <script>
 // 第一步 导入echarts 图标插件
 import echarts from 'echarts'
+import _ from 'loadsh'
 export default {
     data() {
         return {
@@ -53,7 +54,7 @@ export default {
         }
     },
     created(){
-
+        
     },
     // 生命周期函数  页面节点已经渲染完毕
     async mounted(){
@@ -69,10 +70,7 @@ export default {
         // 使用刚指定的配置项和数据显示图表。
         myChart.setOption(result)
         
-    },
-    methods:{
-        
-    }    
+    } 
 }
 </script>
 <style lang="less" scoped>
